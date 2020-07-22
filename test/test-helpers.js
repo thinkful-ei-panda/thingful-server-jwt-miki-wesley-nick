@@ -255,6 +255,16 @@ function seedMaliciousThing(db, user, thing) {
     )
 }
 
+function makeAuthHeader(user) {
+  const {user_name, password} = user
+  const unencoded = `${user_name}:${password}`;
+  
+  const encoded = Buffer
+  .from(unencoded)
+  .toString('base64');
+  return `Basic ${encoded}`
+}
+
 module.exports = {
   makeUsersArray,
   makeThingsArray,
@@ -267,4 +277,5 @@ module.exports = {
   cleanTables,
   seedThingsTables,
   seedMaliciousThing,
+  makeAuthHeader,
 }
