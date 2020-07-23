@@ -88,9 +88,7 @@ describe('Things Endpoints', function () {
   describe('GET /api/things/:thing_id', () => {
     context('Given no things', () => {
       beforeEach('insert users', () => {
-        return db
-          .insert(testUsers)
-          .into('thingful_users');
+        return helpers.seedUsers(db,testUsers)
       });
       it('responds with 404', () => {
         const thingId = 123456;
