@@ -3,7 +3,7 @@ const app = require('../src/app');
 const helpers = require('./test-helpers');
 const supertest = require('supertest');
 
-describe('Protected Endpoints', function() {
+describe('Protected Endpoints', function () {
   let db;
 
   const {
@@ -25,87 +25,87 @@ describe('Protected Endpoints', function() {
 
   afterEach('cleanup', () => helpers.cleanTables(db));
 
-  beforeEach(() => 
+  beforeEach(() =>
     helpers.seedThingsTables(db, testUsers, testThings)
   );
 
   const protectedEndpoints = [
     {
-      name:'GET /api/things/:thingId',
-      path:'/api/things/1'
+      name: 'GET /api/things/:thingId',
+      path: '/api/things/1'
     },
     {
       name: 'GET /api/things/:thing_id/reviews',
       path: '/api/things/1/reviews'
-    }    
+    }
   ];
 
   protectedEndpoints.forEach(ep => {
     describe(ep.name, () => {
-      it('should return 401 \'Missing basic token\' when missing basic token', () => {
+      it('should return 401 \'Missing bearer token\' when missing bearer token', () => {
         return supertest(app)
           .get(ep.path)
-          .expect(401,{error: 'Missing basic token'});
+          .expect(401, { error: 'Missing bearer token' });
       });
-  
+
       it('should return 401 \'Unauthorized request\' when no credentials exist', () => {
-        const userNoCreds = {user_name:'', password:''};
+        const userNoCreds = { user_name: '', password: '' };
         return supertest(app)
           .get(ep.path)
           .set('Authorization', helpers.makeAuthHeader(userNoCreds))
-          .expect(401,{error: 'Unauthorized request'});
+          .expect(401, { error: 'Unauthorized request' });
       });
-  
+
       it('should return 401 \'Unauthorized request\' when invalid user', () => {
-        const invalidUser = {user_name:'badUser',password:''};
+        const invalidUser = { user_name: 'badUser', password: '' };
         return supertest(app)
           .get(ep.path)
           .set('Authorization', helpers.makeAuthHeader(invalidUser))
-          .expect(401,{error: 'Unauthorized request'});
-  
+          .expect(401, { error: 'Unauthorized request' });
+
       });
-      
-      it('should return 401 \'Unauthorized request\' when invalid password', () => {
-        const userWithBadPassword = {user_name: testUsers[0].user_name, password:'badPassword'};
-        return supertest(app)
-          .get(ep.path)
-          .set('Authorization', helpers.makeAuthHeader(userWithBadPassword))
-          .expect(401,{error: 'Unauthorized request'});
-  
-      });
-  
+
+      // it('should return 401 \'Unauthorized request\' when invalid password', () => {
+      //   const userWithBadPassword = { user_name: testUsers[0].user_name, password: 'badPassword' };
+      //   return supertest(app)
+      //     .get(ep.path)
+      //     .set('Authorization', helpers.makeAuthHeader(userWithBadPassword))
+      //     .expect(401, { error: 'Unauthorized request' });
+
+      // });
+
     });
-  });  
+  });
 
   describe('POST /api/reviews', () => {
-    it('should return 401 \'Missing basic token\' when missing basic token', () => {
+    it('should return 401 \'Missing bearer token\' when missing bearer token', () => {
       return supertest(app)
         .post('/api/reviews')
-        .expect(401,{error: 'Missing basic token'});
+        .expect(401, { error: 'Missing bearer token' });
     });
 
     it('should return 401 \'Unauthorized request\' when no credentials exist', () => {
-      const userNoCreds = {user_name:'', password:''};
+      const userNoCreds = { user_name: '', password: '' };
       return supertest(app)
         .post('/api/reviews')
         .set('Authorization', helpers.makeAuthHeader(userNoCreds))
-        .expect(401,{error: 'Unauthorized request'});
+        .expect(401, { error: 'Unauthorized request' });
     });
 
     it('should return 401 \'Unauthorized request\' when invalid user', () => {
-      const invalidUser = {user_name:'badUser',password:''};
+      const invalidUser = { user_name: 'badUser', password: '' };
       return supertest(app)
         .post('/api/reviews')
         .set('Authorization', helpers.makeAuthHeader(invalidUser))
-        .expect(401,{error: 'Unauthorized request'});
+        .expect(401, { error: 'Unauthorized request' });
     });
-    
-    it('should return 401 \'Unauthorized request\' when invalid password', () => {
-      const userWithBadPassword = {user_name: testUsers[0].user_name, password:'badPassword'};
-      return supertest(app)
-        .post('/api/reviews')
-        .set('Authorization', helpers.makeAuthHeader(userWithBadPassword))
-        .expect(401,{error: 'Unauthorized request'});
-    });
+
+    // it('should return 401 \'Unauthorized request\' when invalid password', () => {
+    //   const userWithBadPassword = { user_name: testUsers[0].user_name, password: 'badPassword' };
+    //   return supertest(app)
+    //     .post('/api/reviews')
+    //     .set('Authorization', helpers.makeAuthHeader(userWithBadPassword))
+    //     .expect(401, { error: 'Unauthorized request' });
+    // });
   });
 });
